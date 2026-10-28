@@ -1,0 +1,12 @@
+# Example district parser: staff-directory cards with a mailto link.
+name: generic-directory
+contact_paths:
+  - /about/leadership
+  - /board
+curriculum_paths:
+  - /academics/curriculum
+  - /academics/social-studies
+card: ".staff-card, .directory-entry, li.person"   # one element per person
+person_name: ".name, h3, strong"
+person_title: ".title, .position, em"
+confidence: 0.8

@@ -1,0 +1,4 @@
+[
+  {"id": "district-a", "name": "District A Schools", "state": "NC", "website": "https://district-a.test"},
+  {"id": "district-b", "name": "District B Schools", "state": "NC", "website": "https://district-b.test"}
+]

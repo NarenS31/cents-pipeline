@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /board
+Crawl-delay: 2
