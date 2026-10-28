@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from cents.models import CurriculumAuditResult
+from cents_pipeline.models import CurriculumAuditResult
 
 
 def status_of(r: dict) -> str:

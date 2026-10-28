@@ -8,3 +8,4 @@ private/
 .env
 .env.*
 out/
+dist/

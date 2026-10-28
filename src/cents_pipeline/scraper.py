@@ -1,17 +1,50 @@
-"""Polite async fetcher: custom User-Agent, robots.txt, per-host rate limit, bounded retries."""
+"""Polite async scraper: custom User-Agent, robots.txt evaluation, per-host rate limit, bounded retries."""
 from __future__ import annotations
 
 import asyncio
 import os
 from dataclasses import dataclass
 from urllib.parse import urlsplit
+from urllib.robotparser import RobotFileParser
 
 import httpx
+from bs4 import BeautifulSoup
 
-from .ratelimit import AsyncHostRateLimiter
-from .robots import RobotsCache
+from .rate_limiter import HostRateLimiter
 
 DEFAULT_UA = "CENTS-Audit/0.1 (+https://centscampaign.org; public-records research; contact via site)"
+
+
+class RobotsCache:
+    def __init__(self, user_agent: str) -> None:
+        self.user_agent = user_agent
+        self._parsers: dict[str, RobotFileParser | None] = {}  # None = disallow all
+
+    @staticmethod
+    def origin(url: str) -> str:
+        p = urlsplit(url)
+        return f"{p.scheme}://{p.netloc}"
+
+    def known(self, url: str) -> bool:
+        return self.origin(url) in self._parsers
+
+    def load(self, origin: str, status: int | None, body: str = "") -> None:
+        """Record the result of fetching `origin/robots.txt` (status None = network error)."""
+        if status is None or status >= 500 or status in (401, 403):
+            self._parsers[origin] = None
+        elif status >= 400:
+            rp = RobotFileParser(); rp.parse([]); self._parsers[origin] = rp
+        else:
+            rp = RobotFileParser(); rp.parse(body.splitlines()); self._parsers[origin] = rp
+
+    def allowed(self, url: str) -> bool:
+        rp = self._parsers.get(self.origin(url))
+        return bool(rp and rp.can_fetch(self.user_agent, url))
+
+    def crawl_delay(self, url: str) -> float | None:
+        rp = self._parsers.get(self.origin(url))
+        d = rp.crawl_delay(self.user_agent) if rp else None
+        return float(d) if d else None
 
 
 @dataclass(frozen=True)
@@ -25,14 +58,14 @@ class PoliteFetcher:
     def __init__(
         self,
         client: httpx.AsyncClient,
-        limiter: AsyncHostRateLimiter | None = None,
+        limiter: HostRateLimiter | None = None,
         user_agent: str | None = None,
         max_retries: int = 2,
         max_concurrency: int = 16,
         max_retry_after: float = 30.0,
     ) -> None:
         self.client = client
-        self.limiter = limiter or AsyncHostRateLimiter()
+        self.limiter = limiter or HostRateLimiter()
         self.user_agent = user_agent or os.environ.get("CENTS_USER_AGENT", DEFAULT_UA)
         self.robots = RobotsCache(self.user_agent)
         self.max_retries, self.max_retry_after = max_retries, max_retry_after
@@ -84,3 +117,11 @@ class PoliteFetcher:
         if resp is None:
             return None
         return FetchResult(url=str(resp.url), status=resp.status_code, text=resp.text if resp.status_code < 400 else "")
+
+
+async def fetch_dom(fetcher: PoliteFetcher, url: str) -> BeautifulSoup | None:
+    """Fetch `url` politely and return its parsed DOM, or None if blocked, failed, or non-2xx/3xx."""
+    result = await fetcher.get(url)
+    if result is None or result.status >= 400:
+        return None
+    return BeautifulSoup(result.text, "html.parser")

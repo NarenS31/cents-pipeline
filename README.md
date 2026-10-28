@@ -1,74 +1,117 @@
 # cents-pipeline
 
-Polite public-records discovery and K-8 financial literacy audit pipeline used by [CENTS](https://centscampaign.org).
+[![CI](https://github.com/NarenS31/cents-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/NarenS31/cents-pipeline/actions/workflows/ci.yml)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Status: alpha](https://img.shields.io/badge/status-alpha-orange)
 
-It does two separate jobs:
-1. **Discovery (optional, `--live`):** crawl district websites to find public officials' contact pages and scan curriculum pages for financial-literacy keywords. Contacts are **private** output.
-2. **Audit dataset:** merge coded FOIA email responses into a validated, **PII-free** public dataset (`data/nc_audit.{json,csv,parquet}`).
+Polite, privacy-preserving tooling for public-records research on school districts: an async scraper that obeys
+`robots.txt` and a per-host rate limit, strict Pydantic models, and PII scrubbing so only district-level results are published.
+Built for the [CENTS](https://centscampaign.org) audit of K-8 financial literacy instruction in North Carolina.
 
-The published counts (23 districts confirmed with no dedicated K-8 course, 1 implementing, 91 unresolved, of 115) come from **coded FOIA replies**, not from the crawler. Keyword hits from crawling are supplementary evidence only.
+## Architecture
 
-```mermaid
-flowchart LR
-  D[districts.json] --> P
-  subgraph Crawl["--live / --mock-site"]
-    P[DistrictParser: Python class or YAML] --> F[PoliteFetcher]
-    F --> R[robots.txt cache]
-    F --> L[Per-host token bucket, 1 req/s]
-    F --> H[(district sites)]
-  end
-  F --> C[FOIAContact: private, mode 600]
-  F --> K[keyword hits]
-  X[coded FOIA responses] --> M[merge + Pydantic validation]
-  K --> M
-  M --> O[(data/: json, csv, parquet: no personal data)]
+```
+                         +--------------------------------------------+
+  district URLs -------> |  scraper.PoliteFetcher                     |
+                         |   1. robots.txt check (cached per origin)  |
+                         |   2. rate_limiter.HostRateLimiter          |
+                         |        token bucket per host, 1 req/sec    |
+                         |   3. httpx GET + custom User-Agent         |
+                         |   4. retry on 429/503 (Retry-After)        |
+                         +----------------------+---------------------+
+                                                | HTML
+                                                v
+                                   BeautifulSoup DOM  (fetch_dom)
+                                                |
+                          +---------------------+----------------------+
+                          v                                            v
+                 contacts / keyword hits                     coded FOIA responses
+                          |                                            |
+                          v                                            v
+                 models.FOIAContact                        models.CurriculumAuditResult
+                 (scrub_pii, work email only)              (no names, emails, phones)
+                 PRIVATE, mode 600                                     |
+                                                                       v
+                                                         public dataset (json / csv / parquet)
 ```
 
-## Install and run
-```bash
-python -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]"
-pytest
+| Module | Role |
+|---|---|
+| `rate_limiter.py` | `HostRateLimiter`: async per-host token bucket (default 1 req/sec); `wait_for_host(url)` |
+| `scraper.py` | `PoliteFetcher`, `RobotsCache`, `fetch_dom()` (httpx + BeautifulSoup) |
+| `models.py` | `DistrictRecord`, `FOIAContact`, `CurriculumAuditResult`, `ScrapedDistrictRecord`, `scrub_pii()` |
+| `pipeline.py`, `cli.py`, `io.py`, `parsers/` | Optional audit pipeline and `cents` CLI (needs the `cli` extra) |
 
-cents audit --state NC --coded data/source/nc_coded_responses.json --output json        # offline, JSON to stdout
-cents audit --state NC --output csv --out-dir out                                          # write a file
-cents audit --state NC --live --parser parsers/generic_directory.yaml \
-    --contacts-out private/contacts.json                                                   # real crawl (be polite)
-cents export --coded data/source/nc_coded_responses.json --out-dir data                   # build public datasets
+## Install
+
+From PyPI (once published; the name is not reserved yet):
+
+```bash
+pip install cents-pipeline            # library: httpx, pydantic, beautifulsoup4
+pip install "cents-pipeline[cli]"     # adds the `cents` command (typer, PyYAML)
+pip install "cents-pipeline[parquet]" # Parquet export
+```
+
+From source: `pip install -e ".[dev]"`.
+
+## Quick start
+
+```python
+import asyncio, httpx
+from cents_pipeline import HostRateLimiter, PoliteFetcher, fetch_dom, scrub_pii
+
+async def main():
+    async with httpx.AsyncClient(timeout=20) as client:
+        fetcher = PoliteFetcher(client, HostRateLimiter(rate=1.0))   # 1 request/second/host
+        dom = await fetch_dom(fetcher, "https://example.org/leadership")
+        if dom:                                  # None if robots.txt disallows or the fetch failed
+            print(dom.title.get_text() if dom.title else "no title")
+
+asyncio.run(main())
+print(scrub_pii("Call 919-555-0142 or pat@gmail.com"))   # -> "Call or"
+```
+
+Set `CENTS_USER_AGENT` to identify your project and a contact; the default names CENTS.
+
+### Rate limiting
+`HostRateLimiter` is keyed by the URL's host. The first request to a host is immediate, later ones are spaced
+`1/rate` seconds apart, and concurrent callers for one host queue in order. Different hosts never wait on each other.
+A `Crawl-delay` in robots.txt slows a host further and never speeds it up.
+
+### Privacy rules (`models.py`)
+- `scrub_pii()` removes phone numbers (a personal cell can't be told from an office line, so all go), SSN-shaped numbers,
+  and addresses at consumer domains (gmail, yahoo, hotmail, outlook, icloud and similar). Tune with `ScrubRules`.
+- `FOIAContact` scrubs `name` and `title` and **rejects personal-domain emails**: only official addresses are stored.
+- `CurriculumAuditResult` is the only publishable model and refuses emails or phone numbers in free text.
+- `ScrapedDistrictRecord.public_summary()` exposes counts only, never names or emails.
+
+## CLI (optional)
+```bash
+cents audit --state NC --coded data/source/nc_coded_responses.json --output json   # offline, no network
+cents audit --state NC --live --parser parsers/generic_directory.yaml --contacts-out private/contacts.json
+cents export --coded data/source/nc_coded_responses.json --out-dir data
 cents validate data/nc_audit.json
 ```
-No network is used unless `--live` is passed. `--rate` cannot exceed 1.
+`--live` is required for any network use, and `--rate` cannot exceed 1.
 
-## Web compliance
-- Every request, including `robots.txt` and retries, goes through an async per-host token bucket (**1 request/second/host**; `Crawl-delay` in robots.txt slows a host further).
-- `robots.txt` is honoured: missing file allows, 401/403/5xx/network error blocks.
-- Custom `User-Agent` (override with `CENTS_USER_AGENT`); `Retry-After` honoured on 429/503, capped at 30s.
-- Different hosts crawl concurrently; one host is never hit in parallel.
-
-## Adding a district parser
-In Python:
-```python
-from cents.parsers import DistrictParser, register
-
-@register
-class MyVendor(DistrictParser):
-    name = "my-vendor"
-    def contact_urls(self, district): ...
-    def parse_contacts(self, district, url, html): ...
+## Tests
+```bash
+pip install -e ".[dev]"      # pytest, pytest-asyncio, ruff, typer, PyYAML, pyarrow
+pytest tests/
 ```
-Or in YAML (see `parsers/generic_directory.yaml`, 12 lines) and pass its path to `--parser`.
+Tests use a virtual clock and `httpx.MockTransport`, so they make no network requests and the rate-limit assertions are exact.
 
-## Data and privacy
-- `FOIAContact` (names, emails) is written only via `--contacts-out` to a git-ignored `private/` path with mode 600.
-- `CurriculumAuditResult` is the only public model. It rejects emails and phone numbers in free text, and `cents validate`, `cents export` and CI refuse any `@` in public rows.
-- `data/source/` is generated from the CENTS tracker by `scripts/import_tracker_snapshot.py`; respondent names and reply text are dropped.
-- Reports describe what districts stated. They do not assess legal compliance.
+## Build
+```bash
+pip install flit
+flit build        # dist/*.whl and dist/*.tar.gz
+```
 
-## CI
-`.github/workflows/data-pipeline.yml` runs weekly (and on PRs): tests, an offline smoke audit of fixture districts, schema validation, export to Parquet/CSV/JSON, a PII check, then commits refreshed `data/nc_audit.*`.
-
-## Not built
-Redis/Celery workers: see [docs/DISTRIBUTED.md](docs/DISTRIBUTED.md) for the design.
+## Scope and limits
+This package collects public information politely and reports what districts say in writing. It does not assess legal
+compliance, and the published counts come from coded FOIA replies, not from crawling. Design notes for distributed
+workers (Redis/Celery, not implemented) are in [docs/DISTRIBUTED.md](docs/DISTRIBUTED.md).
 
 ## License
 MIT

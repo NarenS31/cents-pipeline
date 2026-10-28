@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
+from urllib.parse import urlparse
 
 
 class _Bucket:
@@ -15,7 +16,7 @@ class _Bucket:
         self.lock = asyncio.Lock()
 
 
-class AsyncHostRateLimiter:
+class HostRateLimiter:
     """Token bucket per host. `acquire(host)` returns once a request to `host` is allowed.
 
     Requests to different hosts never wait on each other; requests to the same host
@@ -56,3 +57,11 @@ class AsyncHostRateLimiter:
                     bucket.tokens -= 1
                     return
                 await self._sleep((1 - bucket.tokens) / rate)
+
+    async def wait_for_host(self, url: str) -> None:
+        """Block until a request to `url`'s host is allowed (host = scheme-less netloc, lowercased)."""
+        host = urlparse(url).netloc
+        if not host:
+            raise ValueError(f"url has no host: {url!r}")
+        await self.acquire(host)
+
