@@ -9,3 +9,9 @@ private/
 .env.*
 out/
 dist/
+
+# Never commit data, contacts, or credentials
+data/
+*.csv
+work/
+suppression/
