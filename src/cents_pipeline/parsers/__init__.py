@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from .base import DistrictParser
-from .yaml_parser import YAMLDistrictParser
 
 _REGISTRY: dict[str, type[DistrictParser]] = {}
 
@@ -20,6 +19,8 @@ def load_parser(spec: str) -> DistrictParser:
         return _REGISTRY[spec]()
     p = Path(spec)
     if p.suffix in {".yml", ".yaml"} and p.exists():
+        from .yaml_parser import YAMLDistrictParser  # needs the optional `cli` extra (PyYAML)
+
         return YAMLDistrictParser.from_file(p)
     raise ValueError(f"unknown parser {spec!r}; registered: {sorted(_REGISTRY)}")
 

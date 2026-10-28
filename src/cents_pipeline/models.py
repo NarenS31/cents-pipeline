@@ -9,6 +9,40 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_ANY_EMAIL_RE = re.compile(r"[^@\s]+@([^@\s]+\.[^@\s.,;)]+)")
+PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}(?!\d)")
+SSN_RE = re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")
+PERSONAL_EMAIL_DOMAINS = frozenset({
+    "gmail.com", "googlemail.com", "yahoo.com", "hotmail.com", "outlook.com", "live.com",
+    "icloud.com", "me.com", "aol.com", "msn.com", "proton.me", "protonmail.com",
+})
+
+
+class ScrubRules(BaseModel):
+    """What to strip from scraped free text before it is stored. Public officials' *work* email stays."""
+
+    model_config = ConfigDict(frozen=True)
+
+    strip_phones: bool = True            # cannot tell a cell from an office line, so all numbers go
+    strip_ssn: bool = True
+    strip_personal_emails: bool = True   # addresses at consumer domains (gmail, yahoo, ...)
+    personal_email_domains: frozenset[str] = PERSONAL_EMAIL_DOMAINS
+    placeholder: str = ""
+
+
+DEFAULT_RULES = ScrubRules()
+
+
+def scrub_pii(text: str, rules: ScrubRules = DEFAULT_RULES) -> str:
+    """Remove phone numbers, SSN-shaped numbers and personal-domain emails from free text."""
+    if rules.strip_ssn:
+        text = SSN_RE.sub(rules.placeholder, text)  # before phones: an SSN is not a phone number
+    if rules.strip_phones:
+        text = PHONE_RE.sub(rules.placeholder, text)
+    if rules.strip_personal_emails:
+        text = _ANY_EMAIL_RE.sub(
+            lambda m: rules.placeholder if m.group(1).lower() in rules.personal_email_domains else m.group(0), text)
+    return re.sub(r"\s{2,}", " ", text).strip()
 
 
 class Status(StrEnum):
@@ -67,12 +101,19 @@ class FOIAContact(_Strict):
     confidence: float = Field(ge=0, le=1)
     scraped_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
+    @field_validator("name", "title")
+    @classmethod
+    def _scrub(cls, v: str) -> str:
+        return scrub_pii(v)
+
     @field_validator("email")
     @classmethod
     def _email(cls, v: str) -> str:
         v = v.lower()
         if not EMAIL_RE.match(v):
             raise ValueError("invalid email")
+        if v.rsplit("@", 1)[1] in PERSONAL_EMAIL_DOMAINS:
+            raise ValueError("personal email domains are not collected; only official addresses")
         return v
 
 
@@ -96,7 +137,7 @@ class CurriculumAuditResult(_Strict):
     @field_validator("public_note")
     @classmethod
     def _no_contact_info(cls, v: str | None) -> str | None:
-        if v and ("@" in v or re.search(r"\d{3}[-.\s]\d{3}[-.\s]\d{4}", v)):
+        if v and ("@" in v or PHONE_RE.search(v)):
             raise ValueError("public_note must not contain emails or phone numbers")
         return v
 
@@ -111,6 +152,27 @@ class CurriculumAuditResult(_Strict):
         ):
             raise ValueError("confirmed_not_implementing requires response_type=no_dedicated_course")
         return self
+
+
+class ScrapedDistrictRecord(_Strict):
+    """Everything crawled for one district. Contains personal data: keep private; publish `public_summary()`."""
+
+    district: DistrictRecord
+    contacts: list[FOIAContact] = Field(default_factory=list)
+    keyword_hits: list[str] = Field(default_factory=list)
+    pages_checked: int = Field(default=0, ge=0)
+    fetched_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    @model_validator(mode="after")
+    def _contacts_belong_here(self) -> ScrapedDistrictRecord:
+        if any(c.district_id != self.district.id for c in self.contacts):
+            raise ValueError("contact belongs to a different district")
+        return self
+
+    def public_summary(self) -> dict:
+        """District-level facts only: no names, titles or emails."""
+        return {"district_id": self.district.id, "district_name": self.district.name, "state": self.district.state,
+                "contacts_found": len(self.contacts), "keyword_hits": self.keyword_hits, "pages_checked": self.pages_checked}
 
 
 PUBLIC_COLUMNS = list(CurriculumAuditResult.model_fields)

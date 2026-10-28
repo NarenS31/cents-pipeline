@@ -5,10 +5,10 @@ import asyncio
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 
-from .crawl.fetcher import PoliteFetcher
 from .keywords import keyword_hits
 from .models import CurriculumAuditResult, DistrictRecord, FOIAContact, OutreachStatus, ResponseType, Status
 from .parsers.base import DistrictParser
+from .scraper import PoliteFetcher
 
 
 @dataclass

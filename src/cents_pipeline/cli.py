@@ -10,8 +10,6 @@ import httpx
 import typer
 
 from . import __version__
-from .crawl.fetcher import PoliteFetcher
-from .crawl.ratelimit import AsyncHostRateLimiter
 from .io import (
     load_coded,
     load_districts,
@@ -24,6 +22,8 @@ from .io import (
 from .models import CurriculumAuditResult
 from .parsers import load_parser
 from .pipeline import AuditRun, run_audit, uncoded_result
+from .rate_limiter import HostRateLimiter
+from .scraper import PoliteFetcher
 
 app = typer.Typer(help="CENTS public-records audit pipeline.", no_args_is_help=True, add_completion=False)
 Format = Annotated[str, typer.Option("--output", "-o", help="json | csv | parquet")]
@@ -41,7 +41,7 @@ def _mock_transport(site_dir: Path) -> httpx.MockTransport:
 async def _crawl(districts, parser, coded, rate: float, mock: Path | None) -> AuditRun:
     transport = _mock_transport(mock) if mock else None
     async with httpx.AsyncClient(transport=transport, timeout=20) as client:
-        fetcher = PoliteFetcher(client, AsyncHostRateLimiter(rate=rate))
+        fetcher = PoliteFetcher(client, HostRateLimiter(rate=rate))
         return await run_audit(districts, parser, fetcher, coded)
 
 
