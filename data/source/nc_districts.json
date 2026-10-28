@@ -1,0 +1,577 @@
+[
+  {
+    "id": "alamance-burlington-school-system",
+    "name": "Alamance-Burlington School System",
+    "state": "NC"
+  },
+  {
+    "id": "alexander-county-schools",
+    "name": "Alexander County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "alleghany-county-schools",
+    "name": "Alleghany County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "anson-county-schools",
+    "name": "Anson County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "ashe-county-schools",
+    "name": "Ashe County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "asheboro-city-schools",
+    "name": "Asheboro City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "asheville-city-schools",
+    "name": "Asheville City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "avery-county-schools",
+    "name": "Avery County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "beaufort-county-schools",
+    "name": "Beaufort County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "bertie-county-schools",
+    "name": "Bertie County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "bladen-county-schools",
+    "name": "Bladen County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "brunswick-county-schools",
+    "name": "Brunswick County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "buncombe-county-schools",
+    "name": "Buncombe County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "burke-county-public-schools",
+    "name": "Burke County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "cabarrus-county-schools",
+    "name": "Cabarrus County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "caldwell-county-schools",
+    "name": "Caldwell County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "camden-county-schools",
+    "name": "Camden County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "carteret-county-public-schools",
+    "name": "Carteret County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "caswell-county-schools",
+    "name": "Caswell County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "catawba-county-schools",
+    "name": "Catawba County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "chapel-hill-carrboro-city-schools",
+    "name": "Chapel Hill-Carrboro City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "charlotte-mecklenburg-schools",
+    "name": "Charlotte-Mecklenburg Schools",
+    "state": "NC"
+  },
+  {
+    "id": "chatham-county-schools",
+    "name": "Chatham County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "cherokee-county-school-district",
+    "name": "Cherokee County School District",
+    "state": "NC"
+  },
+  {
+    "id": "clay-county-schools",
+    "name": "Clay County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "cleveland-county-schools",
+    "name": "Cleveland County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "clinton-city-schools",
+    "name": "Clinton City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "columbus-county-schools",
+    "name": "Columbus County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "craven-county-schools",
+    "name": "Craven County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "cumberland-county-schools",
+    "name": "Cumberland County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "currituck-county-schools",
+    "name": "Currituck County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "dare-county-schools",
+    "name": "Dare County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "davidson-county-schools",
+    "name": "Davidson County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "davie-county-schools",
+    "name": "Davie County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "duplin-county-schools",
+    "name": "Duplin County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "durham-public-schools",
+    "name": "Durham Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "edenton-chowan-schools",
+    "name": "Edenton-Chowan Schools",
+    "state": "NC"
+  },
+  {
+    "id": "edgecombe-county-public-schools",
+    "name": "Edgecombe County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "elizabeth-city-pasquotank-public-schools",
+    "name": "Elizabeth City-Pasquotank Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "elkin-city-schools",
+    "name": "Elkin City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "franklin-county-schools",
+    "name": "Franklin County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "gaston-county-schools",
+    "name": "Gaston County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "gates-county-schools",
+    "name": "Gates County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "graham-county-schools",
+    "name": "Graham County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "granville-county-schools",
+    "name": "Granville County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "greene-county-schools",
+    "name": "Greene County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "guilford-county-schools",
+    "name": "Guilford County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "halifax-county-schools",
+    "name": "Halifax County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "harnett-county-schools",
+    "name": "Harnett County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "haywood-county-schools",
+    "name": "Haywood County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "henderson-county-public-schools",
+    "name": "Henderson County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "hertford-county-public-schools",
+    "name": "Hertford County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "hickory-city-schools",
+    "name": "Hickory City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "hoke-county-schools",
+    "name": "Hoke County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "hyde-county-schools",
+    "name": "Hyde County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "iredell-statesville-schools",
+    "name": "Iredell-Statesville Schools",
+    "state": "NC"
+  },
+  {
+    "id": "jackson-county-schools",
+    "name": "Jackson County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "johnston-county-schools",
+    "name": "Johnston County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "jones-county-schools",
+    "name": "Jones County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "kannapolis-city-schools",
+    "name": "Kannapolis City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "lee-county-schools",
+    "name": "Lee County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "lenoir-county-schools",
+    "name": "Lenoir County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "lexington-city-schools",
+    "name": "Lexington City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "lincoln-county-schools",
+    "name": "Lincoln County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "macon-county-schools",
+    "name": "Macon County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "madison-county-schools",
+    "name": "Madison County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "martin-county-schools",
+    "name": "Martin County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "mcdowell-county-schools",
+    "name": "McDowell County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "mitchell-county-schools",
+    "name": "Mitchell County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "montgomery-county-schools",
+    "name": "Montgomery County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "moore-county-schools",
+    "name": "Moore County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "mooresville-graded-school-district",
+    "name": "Mooresville Graded School District",
+    "state": "NC"
+  },
+  {
+    "id": "mount-airy-city-schools",
+    "name": "Mount Airy City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "nash-county-public-schools",
+    "name": "Nash County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "new-hanover-county-schools",
+    "name": "New Hanover County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "newton-conover-city-schools",
+    "name": "Newton-Conover City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "northampton-county-schools",
+    "name": "Northampton County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "onslow-county-schools",
+    "name": "Onslow County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "orange-county-schools",
+    "name": "Orange County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "pamlico-county-schools",
+    "name": "Pamlico County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "pender-county-schools",
+    "name": "Pender County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "perquimans-county-schools",
+    "name": "Perquimans County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "person-county-schools",
+    "name": "Person County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "pitt-county-schools",
+    "name": "Pitt County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "polk-county-schools",
+    "name": "Polk County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "public-schools-of-robeson-county",
+    "name": "Public Schools of Robeson County",
+    "state": "NC"
+  },
+  {
+    "id": "randolph-county-schools",
+    "name": "Randolph County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "richmond-county-schools",
+    "name": "Richmond County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "roanoke-rapids-graded-school-district",
+    "name": "Roanoke Rapids Graded School District",
+    "state": "NC"
+  },
+  {
+    "id": "rockingham-county-schools",
+    "name": "Rockingham County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "rowan-salisbury-school-system",
+    "name": "Rowan-Salisbury School System",
+    "state": "NC"
+  },
+  {
+    "id": "rutherford-county-schools",
+    "name": "Rutherford County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "sampson-county-schools",
+    "name": "Sampson County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "scotland-county-schools",
+    "name": "Scotland County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "stanly-county-schools",
+    "name": "Stanly County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "stokes-county-schools",
+    "name": "Stokes County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "surry-county-schools",
+    "name": "Surry County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "swain-county-schools",
+    "name": "Swain County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "thomasville-city-schools",
+    "name": "Thomasville City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "transylvania-county-schools",
+    "name": "Transylvania County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "tyrrell-county-schools",
+    "name": "Tyrrell County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "union-county-public-schools",
+    "name": "Union County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "vance-county-public-schools",
+    "name": "Vance County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "wake-county-public-school-system",
+    "name": "Wake County Public School System",
+    "state": "NC"
+  },
+  {
+    "id": "warren-county-schools",
+    "name": "Warren County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "washington-county-schools",
+    "name": "Washington County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "watauga-county-schools",
+    "name": "Watauga County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "wayne-county-public-schools",
+    "name": "Wayne County Public Schools",
+    "state": "NC"
+  },
+  {
+    "id": "weldon-city-schools",
+    "name": "Weldon City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "whiteville-city-schools",
+    "name": "Whiteville City Schools",
+    "state": "NC"
+  },
+  {
+    "id": "wilkes-county-schools",
+    "name": "Wilkes County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "wilson-county-schools",
+    "name": "Wilson County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "winston-salem-forsyth-county-schools",
+    "name": "Winston-Salem/Forsyth County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "yadkin-county-schools",
+    "name": "Yadkin County Schools",
+    "state": "NC"
+  },
+  {
+    "id": "yancey-county-schools",
+    "name": "Yancey County Schools",
+    "state": "NC"
+  }
+]
